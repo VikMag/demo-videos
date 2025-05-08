@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class VideoService {
-  private baseUrl = 'https://demo-videos.onrender.com:10000/api'; // URL base para todos los endpoints
+  private baseUrl = 'https://demo-videos.onrender.com/api'; // URL base para todos los endpoints
   private videosUrl = `${this.baseUrl}/videos`;
   private userVideosUrl = `${this.baseUrl}/user-videos`;
   private documentVideosUrl = `${this.baseUrl}/documentos`;

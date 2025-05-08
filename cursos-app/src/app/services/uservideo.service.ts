@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class UserVideoService {
-  private apiUrl = 'https://demo-videos.onrender.com:10000/api/user-videos';
+  private apiUrl = 'https://demo-videos.onrender.com/api/user-videos';
 
   constructor(private http: HttpClient) {}
 
