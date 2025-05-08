@@ -1,8 +1,15 @@
 const { Pool } = require('pg');
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL, // Usa la variable de Render
-  ssl: { rejectUnauthorized: false } // Obligatorio para Render
+  host: process.env.DB_HOST,       
+  user: process.env.DB_USER,        
+  password: process.env.DB_PASSWORD, 
+  database: process.env.DB_NAME,    
+  port: process.env.PORT || 5432,   
+  ssl: {
+    rejectUnauthorized: false       // Obligatorio en Render
+  }
 });
+
 
 module.exports = {
   // Obtener todos los usuarios (excepto admin)
