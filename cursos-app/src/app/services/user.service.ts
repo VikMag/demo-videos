@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://demo-videos.onrender.com:10000api/users';
+  private apiUrl = 'https://demo-videos.onrender.com:10000/api/users';
 
   constructor(private http: HttpClient) { }
   sendFeedback(subject: string, video: string, message: string): Observable<any> {
