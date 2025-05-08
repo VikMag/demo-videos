@@ -9,8 +9,16 @@ app.use(express.json());
 
 // Rutas
 app.use('/api', require('./routes'));
-
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    message: 'API funcionando ✅',
+    endpoints: {
+      api: '/api',
+      frontend: process.env.FRONTEND_URL || 'No configurado'
+    }
+  });
+});
 // Iniciar servidor
 app.listen(process.env.PORT, () => {
-  console.log(`🚀 Servidor en http://localhost:${process.env.PORT}`);
+  console.log(`🚀 Servidor listo en el puerto ${process.env.PORT}`);
 });
