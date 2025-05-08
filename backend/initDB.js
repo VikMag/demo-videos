@@ -4,24 +4,29 @@ const pool = new Pool({
     user: process.env.DB_USER,        
     password: process.env.DB_PASSWORD, 
     database: process.env.DB_NAME,    
-    port:  5432,   
+    port: 5432,   
     ssl: {
-      rejectUnauthorized: false       // Obligatorio en Render
+      rejectUnauthorized: false
     }
-  });
-  
+});
 
 const createTables = async () => {
+  const client = await pool.connect();
   try {
-    await pool.query(`
-      -- Tabla categorias
-      CREATE TABLE categorias (
+    // Iniciamos una transacción para asegurar la integridad
+    await client.query('BEGIN');
+
+    // 1. Primero creamos la tabla categorias (no tiene dependencias)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS categorias (
         id SERIAL PRIMARY KEY,
         nombre VARCHAR(100) NOT NULL
       );
+    `);
 
-      -- Tabla users
-      CREATE TABLE users (
+    // 2. Luego la tabla users (no tiene dependencias)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         username VARCHAR(50) NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
@@ -29,9 +34,11 @@ const createTables = async () => {
         rol VARCHAR(20) CHECK (rol IN ('estudiante', 'profesor', 'admin')) DEFAULT 'estudiante',
         created_at TIMESTAMP DEFAULT NOW()
       );
+    `);
 
-      -- Tabla videos
-      CREATE TABLE videos (
+    // 3. Ahora videos (depende de categorias)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS videos (
         id SERIAL PRIMARY KEY,
         titulo VARCHAR(100) NOT NULL,
         url VARCHAR(255) NOT NULL,
@@ -43,9 +50,11 @@ const createTables = async () => {
           FOREIGN KEY (categoria_id) 
           REFERENCES categorias(id)
       );
+    `);
 
-      -- Tabla documentos
-      CREATE TABLE documentos (
+    // 4. Luego documentos (depende de videos)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS documentos (
         id SERIAL PRIMARY KEY,
         nombre VARCHAR(100) NOT NULL,
         url VARCHAR(255) NOT NULL,
@@ -55,9 +64,11 @@ const createTables = async () => {
           REFERENCES videos(id)
           ON DELETE CASCADE
       );
+    `);
 
-      -- Tabla user_videos
-      CREATE TABLE user_videos (
+    // 5. Finalmente user_videos (depende de users y videos)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS user_videos (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL,
         video_id INTEGER NOT NULL,
@@ -74,12 +85,22 @@ const createTables = async () => {
           ON DELETE CASCADE
       );
     `);
-    console.log('✅ Tablas creadas exitosamente');
+
+    await client.query('COMMIT');
+    console.log('✅ Todas las tablas creadas exitosamente en el orden correcto');
   } catch (error) {
+    await client.query('ROLLBACK');
     console.error('❌ Error al crear tablas:', error.message);
+    throw error; // Relanzamos el error para manejo externo
   } finally {
+    client.release();
     pool.end();
   }
 };
 
-createTables();
+// Ejecutamos con manejo de errores adecuado
+createTables()
+  .catch(e => {
+    console.error('Error en la ejecución:', e);
+    process.exit(1);
+  });
