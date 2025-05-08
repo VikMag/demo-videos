@@ -1,30 +1,38 @@
-const db = require('../config/db');
+const { Pool } = require('pg');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL, // Render automáticamente provee esta variable
+  ssl: { rejectUnauthorized: false } // Necesario para Render
+});
 
 module.exports = {
   // Obtener todos los documentos
   getAll: async () => {
-    const [rows] = await db.execute('SELECT id, nombre, url, video_is FROM documentos');
+    const { rows } = await pool.query('SELECT id, nombre, url, video_id FROM documentos');
     return rows;
   },
 
-  // Obtener un documento por id
+  // Obtener un documento por video_id
   getByVideoId: async (video_id) => {
-    const [rows] = await db.execute('SELECT id, nombre, url, video_id FROM documentos where video_id = ?', [video_id]);
-    return rows; 
+    const { rows } = await pool.query(
+      'SELECT id, nombre, url, video_id FROM documentos WHERE video_id = $1', 
+      [video_id]
+    );
+    return rows;
   },
 
-  // Crear nuevo usuario
-  create: async ({ nombre, url, video_id}) => {
-    const [result] = await db.execute(
+  // Crear nuevo documento
+  create: async ({ nombre, url, video_id }) => {
+    const { rows } = await pool.query(
       `INSERT INTO documentos (nombre, url, video_id) 
-       VALUES (?, ?, ?)`,
+       VALUES ($1, $2, $3) 
+       RETURNING id`, // PostgreSQL retorna el id insertado con RETURNING
       [nombre, url, video_id]
     );
-    return result.insertId;
+    return rows[0].id; // Accedemos al id desde el primer elemento de rows
   },
 
-  // Eliminar usuario
+  // Eliminar documento
   delete: async (id) => {
-    await db.execute('DELETE FROM documentos WHERE id = ?', [id]);
+    await pool.query('DELETE FROM documentos WHERE id = $1', [id]);
   }
 };

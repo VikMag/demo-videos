@@ -1,8 +1,12 @@
-const db = require('../config/db');
+const { Pool } = require('pg');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL, // Provided by Render
+  ssl: { rejectUnauthorized: false } // Required for Render
+});
 
 module.exports = {
   getAll: async () => {
-    const [rows] = await db.execute(`
+    const { rows } = await pool.query(`
       SELECT v.*, c.nombre AS categoria_nombre 
       FROM videos v
       JOIN categorias c ON v.categoria_id = c.id
@@ -11,31 +15,42 @@ module.exports = {
   },
   
   getAllCategories: async () => {
-    const [rows] = await db.execute(`
+    const { rows } = await pool.query(`
       SELECT * 
       FROM categorias
     `);
     return rows;
   },
-  // Crear video
+
+  // Create video
   create: async ({ titulo, url, categoria_id, precio, imagen, descripcion }) => {
-    const [result] = await db.execute(
-      'INSERT INTO videos (titulo, url, categoria_id, precio, imagen, descripcion) VALUES (?, ?, ?, ?, ?, ?)',
+    const { rows } = await pool.query(
+      `INSERT INTO videos 
+        (titulo, url, categoria_id, precio, imagen, descripcion) 
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id`,
       [titulo, url, categoria_id, precio, imagen, descripcion]
     );
-    return result.insertId;
+    return rows[0].id;
   },
 
-  // Actualizar video
+  // Update video
   update: async (id, { titulo, url, categoria_id, precio, imagen, descripcion }) => {
-    await db.execute(
-      'UPDATE videos SET titulo = ?, url = ?, categoria_id = ?, precio = ?, imagen = ?, descripcion = ? WHERE id = ?',
+    await pool.query(
+      `UPDATE videos 
+       SET titulo = $1, 
+           url = $2, 
+           categoria_id = $3, 
+           precio = $4, 
+           imagen = $5, 
+           descripcion = $6 
+       WHERE id = $7`,
       [titulo, url, categoria_id, precio, imagen, descripcion, id]
     );
   },
 
-  // Eliminar video
+  // Delete video
   delete: async (id) => {
-    await db.execute('DELETE FROM videos WHERE id = ?', [id]);
+    await pool.query('DELETE FROM videos WHERE id = $1', [id]);
   }
 };
