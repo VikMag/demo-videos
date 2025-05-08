@@ -1,0 +1,25 @@
+.container {
+    margin-top: 20px;
+  }
+  
+  .card {
+    margin-bottom: 20px;
+  }
+  
+  .card-img-top {
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .card-body {
+    text-align: center;
+  }
+  
+  h2 {
+    margin-top: 30px;
+  }
+  
+  button {
+    width: 100%;
+  }
+  

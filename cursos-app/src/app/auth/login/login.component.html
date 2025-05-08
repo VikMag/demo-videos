@@ -1,0 +1,46 @@
+<div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="card-header  shadow-sm p-4" style="width: 100%; max-width: 400px;">
+    <!-- Quitamos bg-primary y text-white, y ajustamos el padding -->
+    <div class="card-header text-center py-4"> 
+      <!-- Logo más grande (ajusta el tamaño según necesites) -->
+      <img 
+        src="assets/logo.png" 
+        alt="Logo" 
+        class="img-fluid" 
+        style="max-height: 280px; width: auto;"
+      > 
+    </div>
+    <div class="card-body">
+      <!-- Mensaje de error -->
+      <div *ngIf="error" class="alert alert-danger text-center">
+        {{ error }}
+      </div>
+
+      <!-- Formulario de login -->
+      <form (ngSubmit)="onSubmit(loginForm)" #loginForm="ngForm">
+        <!-- Campo de correo/usuario -->
+        <div class="mb-3">
+          <label for="email">Email</label>
+          <input type="email" id="email" class="form-control" [(ngModel)]="email" name="email" required>
+        </div>
+
+        <!-- Campo de contraseña -->
+        <div class="mb-3">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" class="form-control" [(ngModel)]="password" name="password" required>
+        </div>
+
+        <!-- Botón de enviar -->
+        <div class="d-grid">
+          <button
+            class="btn btn-primary"
+            type="submit"
+            [disabled]="!loginForm.form.valid"
+          >
+            Iniciar sesión
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

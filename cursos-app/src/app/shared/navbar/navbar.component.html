@@ -1,0 +1,24 @@
+<nav class="col-3 col-md-2 bg-light p-3 border-end d-flex flex-column">
+  <h5>Hola, {{ username }}</h5>
+
+  <ul class="nav flex-column mb-auto">
+    <li class="nav-item" *ngIf="rol === 'estudiante'">
+      <a class="nav-link text-dark" routerLink="/cursos" routerLinkActive="active">Cursos disponibles</a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link text-dark" routerLink="/catalogos" routerLinkActive="active">Catálogos</a>
+    </li>
+
+    <li class="nav-item" *ngIf="rol === 'admin'">
+      <a class="nav-link text-dark" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+    </li>
+
+    <li class="nav-item"  *ngIf="rol === 'estudiante'">
+        <a class="nav-link text-dark" routerLink="/feedback" routerLinkActive="active">Feedback</a>
+    </li>
+  </ul>
+  <div class="mt-auto text-center border-top pt-3">
+    <p class="mb-0">&copy; {{ currentYear }} - Derechos Reservados</p>
+  </div>
+</nav>

@@ -1,0 +1,219 @@
+<div class="container">
+  <h3 class="text-center mt-4">Gestión de Usuarios</h3>
+
+  <!-- Mensajes de error o éxito -->
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+
+  <!-- Formulario para crear un nuevo usuario -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5>Crear nuevo usuario</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="createUser()">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" class="form-control" [(ngModel)]="newUser.username" name="username" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" class="form-control" [(ngModel)]="newUser.email" name="email" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" class="form-control" [(ngModel)]="newUser.password" name="password" required />
+        </div>
+        <div class="form-group">
+          <label for="rol">Rol</label>
+          <select class="form-control" [(ngModel)]="newUser.rol" name="rol" required>
+            <option value="estudiante">Estudiante</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div><br />
+        <button type="submit" class="btn btn-primary">Crear Usuario</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla de usuarios -->
+  <div *ngIf="users.length > 0">
+    <h4 class="mb-3">Lista de Usuarios</h4>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Cursos</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.rol }}</td>
+          <td>
+            <a [routerLink]="['/user-cursos', user.id]" class="btn btn-info btn-sm mr-2">Ver Cursos</a>
+          </td>
+          <td><button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Eliminar</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="users.length === 0" class="alert alert-info">
+    No hay usuarios disponibles.
+  </div>
+
+  <h3 class="text-center mt-4">Gestión de Videos</h3>
+
+  <!-- Formulario para crear un nuevo video -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5>Crear nuevo video</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="createVideo()">
+        <div class="form-group">
+          <label for="titulo">Título</label>
+          <input type="text" id="titulo" class="form-control" [(ngModel)]="newVideo.titulo" name="titulo" required />
+        </div>
+        <div class="form-group">
+          <label for="url">URL</label>
+          <input type="text" id="url" class="form-control" [(ngModel)]="newVideo.url" name="url" required />
+        </div>
+        <div class="form-group">
+          <label for="precio">Precio</label>
+          <input type="number" id="precio" class="form-control" [(ngModel)]="newVideo.precio" name="precio" required />
+        </div>
+        <div class="form-group">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" class="form-control" [(ngModel)]="newVideo.descripcion" name="descripcion"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="imagen">Imagen</label>
+          <input type="text" id="imagen" class="form-control" [(ngModel)]="newVideo.imagen" name="imagen" required />        
+        </div>
+        <div class="form-group">
+          <label for="categoria_id">Categoría</label>
+          <select class="form-control" [(ngModel)]="newVideo.categoria_id" name="categoria_id" required>
+            <option [ngValue]="null" disabled selected>Selecciona una categoría</option>
+            <option *ngFor="let category of categories" [ngValue]="category.id">
+              {{ category.nombre }}
+            </option>
+          </select>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Crear Video</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla de videos -->
+  <div *ngIf="videos.length > 0">
+    <h4 class="mb-3">Lista de Videos</h4>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>URL</th>
+          <th>Precio</th>
+          <th>Categoría</th>
+          <th>Documentos</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let video of videos">
+          <td>{{ video.titulo }}</td>
+          <td>{{ video.url }}</td>
+          <td>{{ video.precio | currency }}</td>
+          <td>{{ getCategoryName(video.categoria_id) }}</td>
+          <td>
+            <button class="btn btn-secondary btn-sm"
+                    data-bs-toggle="modal"
+                    (click)="openModalDocument(video.id)">
+              Agregar Documentos
+            </button>
+          </td>
+          <td><button class="btn btn-danger btn-sm" (click)="deleteVideo(video.id)">Eliminar</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="videos.length === 0" class="alert alert-info">
+    No hay videos disponibles.
+  </div>
+</div>
+
+<!-- Modal para agregar documentos -->
+<div class="modal fade" id="documentModal" tabindex="-1" aria-labelledby="documentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="documentModalLabel">Documentos del Video</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Formulario para agregar documento -->
+        <form (ngSubmit)="createDocument()">
+          <div class="row">
+            <div class="col-md-5">
+              <label for="nombreDocumento" class="form-label">Nombre del documento</label>
+              <input type="text" id="nombreDocumento" class="form-control" [(ngModel)]="newDocument.nombre" name="nombre" required />
+            </div>
+            <div class="col-md-5">
+              <label for="urlDocumento" class="form-label">URL del documento</label>
+              <input type="text" id="urlDocumento" class="form-control" [(ngModel)]="newDocument.url" name="url" required />
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+              <button type="submit" class="btn btn-success w-100">Agregar</button>
+            </div>
+          </div>
+        </form>
+
+        <hr />
+
+        <!-- Tabla de documentos -->
+        <div *ngIf="documentos.length > 0">
+          <h6>Documentos asociados:</h6>
+          <table class="table table-bordered mt-2">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>URL</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let doc of documentos">
+                <td>{{ doc.nombre }}</td>
+                <td><a [href]="doc.url" target="_blank">{{ doc.url }}</a></td>
+                <td>
+                  <button class="btn btn-danger btn-sm" (click)="deleteDocument(doc.id)">Eliminar</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div *ngIf="documentos.length === 0" class="alert alert-info mt-3">
+          No hay documentos asociados a este video.
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+</div>

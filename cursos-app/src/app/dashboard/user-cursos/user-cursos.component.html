@@ -1,0 +1,70 @@
+<div class="container">
+    <h3 class="text-center mt-4">Videos Comprados por  {{ username }}</h3>
+  
+    <!-- Mensajes de error o éxito -->
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+  
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+  
+    <!-- Tabla de videos comprados -->
+    <div *ngIf="videos.length > 0">
+      <h4 class="mb-3">Lista de Videos Comprados</h4>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let video of videos">
+            <td>{{ video.titulo }}</td>
+            <td>{{ video.descripcion || 'Sin descripción' }}</td>
+            <td>{{ video.precio_pagado | currency }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Si no hay videos comprados -->
+    <div *ngIf="videos.length === 0" class="alert alert-info">
+      Este usuario no ha comprado ningún video.
+    </div>
+  
+    <!-- Tabla de videos disponibles -->
+    <div *ngIf="allVideos.length > 0">
+      <h4 class="mb-3 mt-5">Videos Disponibles</h4>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let video of allVideos">
+            <td>{{ video.titulo }}</td>
+            <td>{{ video.descripcion || 'Sin descripción' }}</td>
+            <td>{{ video.precio | currency }}</td>
+            <td>
+              <!-- Aquí puedes agregar un enlace o botón para comprar el video -->
+              <button class="btn btn-success btn-sm" (click)="purchaseVideo(video)">Asignar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Si no hay videos disponibles -->
+    <div *ngIf="allVideos.length === 0" class="alert alert-info">
+      No hay videos disponibles.
+    </div>
+  </div>
+  

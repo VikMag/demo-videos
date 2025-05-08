@@ -1,0 +1,63 @@
+<div class="container">
+    <h3 class="text-center mt-4">Catálogo Completo de Videos</h3>
+    
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+  
+    <div *ngIf="!errorMessage">
+      <!-- Iteramos por cada categoría -->
+      <div *ngFor="let categoryName of objectKeys(categories)" class="category-section mb-5">
+        <h2 class="category-title mb-4">{{ categoryName }}</h2>
+        
+        <div class="row">
+          <!-- Mostramos los videos de esta categoría -->
+          <div *ngFor="let video of categories[categoryName]" class="col-md-4 mb-4">
+            <div class="card h-100">
+              <img [src]="video.imagen" class="card-img-top" alt="{{ video.titulo }}" style="height: 180px; object-fit: cover;">
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ video.titulo }}</h5>
+                <div class="mt-auto">
+                  <p class="text-muted">Precio: {{ video.precio | currency }}</p>
+                  <button class="btn btn-primary btn-sm" (click)="openModal(video)">Ver detalles</button>
+                </div>
+                <div class="mt-auto">
+                    <button *ngIf="isAdmin" class="btn btn-danger btn-sm ml-2" (click)="deleteVideo(video.id)">
+                      Eliminar
+                    </button>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Modal Bootstrap -->
+<div class="modal fade" id="videoDetailModal" tabindex="-1" aria-labelledby="videoDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      
+  
+        <!-- Título del modal, alineado a la izquierda, dentro del cuerpo del modal -->
+        <div class="modal-header">
+          <h5 class="modal-title" id="videoDetailModalLabel">{{ selectedVideo?.titulo }}</h5>
+        </div>
+  
+        <!-- Descripción del video -->
+        <div class="modal-body">
+          <p>{{ selectedVideo?.descripcion || 'Sin descripción disponible.' }}</p>
+        </div>
+  
+        <!-- Pie del modal con botones -->
+        <div class="modal-footer">
+          <button class="btn btn-success" (click)="purchaseVideo(selectedVideo)">Comprar</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      
+      </div>
+    </div>
+  </div>
+  
+  
+  

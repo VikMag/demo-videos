@@ -1,0 +1,4 @@
+# .gitignore (en la raíz del proyecto)
+node_modules/
+.env
+dist/

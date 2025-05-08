@@ -1,0 +1,3 @@
+[submodule "cursos-app"]
+	path = cursos-app
+	url = https://github.com/VikMag/demo-cursos.git

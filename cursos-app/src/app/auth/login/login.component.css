@@ -1,0 +1,11 @@
+/* Asegurar que el botón no sobresalga de la tarjeta */
+.card-body .d-grid {
+    width: 100%; /* Asegura que el contenedor del botón ocupe todo el ancho disponible */
+}
+
+/* Botón de iniciar sesión */
+.card-body button {
+    width: 100%; /* Hace que el botón ocupe el 100% del ancho de su contenedor */
+    padding: 10px; /* Ajusta el padding para que el botón no sea demasiado pequeño */
+    box-sizing: border-box; /* Asegura que el padding no afecte el tamaño del botón */
+}
