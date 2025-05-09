@@ -31,7 +31,7 @@ module.exports = {
   },
 
   // Crear nuevo usuario
-  create: async ({ username, email, passwordHash, rol = 'estudiante' }) => {
+  create: async ({ username, email, passwordHash, rol  }) => {
     const { rows } = await pool.query(
       `INSERT INTO users (username, email, password_hash, rol) 
        VALUES ($1, $2, $3, $4) 
