@@ -50,6 +50,15 @@ module.exports = {
     if (!user || !(await bcrypt.compare(password, user.password_hash))) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
+
+    // >>> Verificaciones añadidas (solo esto) <<<
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ error: 'Configuración del servidor incompleta' });
+    }
+    if (!user.id || !user.rol) {
+      return res.status(500).json({ error: 'Estructura de usuario inválida' });
+    }
+    // >>> Fin de verificaciones <<<
     
     const token = jwt.sign({ id: user.id, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
     
