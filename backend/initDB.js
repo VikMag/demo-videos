@@ -15,6 +15,20 @@ const insertCategorias = async () => {
   try {
     await client.query('BEGIN');
 
+    // Asegurarse de que 'nombre' sea único para poder usar ON CONFLICT
+    await client.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint
+          WHERE conname = 'unique_nombre'
+        ) THEN
+          ALTER TABLE categorias ADD CONSTRAINT unique_nombre UNIQUE (nombre);
+        END IF;
+      END
+      $$;
+    `);
+
     const categorias = [
       'Recursos Humanos',
       'Ingeniería Industrial',
@@ -30,11 +44,8 @@ const insertCategorias = async () => {
 
     for (const nombre of categorias) {
       await client.query(
-        `INSERT INTO categorias (nombre)
-         SELECT $1
-         WHERE NOT EXISTS (
-           SELECT 1 FROM categorias WHERE nombre = $1
-         );`,
+        `INSERT INTO categorias (nombre) VALUES ($1)
+         ON CONFLICT (nombre) DO NOTHING;`,
         [nombre]
       );
     }
