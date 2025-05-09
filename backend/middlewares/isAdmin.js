@@ -21,8 +21,8 @@ module.exports = (req, res, next) => {
       return res.status(403).json({ 
         error: 'Acceso denegado',
         details: 'Se requiere rol de administrador',
-        requiredRole: 'admin',
-        currentRole: req.user.rol,
+        requiredrol: 'admin',
+        currentrol: req.user.rol,
         code: 'ADMIN_ACCESS_REQUIRED'
       });
     }

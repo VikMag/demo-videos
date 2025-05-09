@@ -21,7 +21,7 @@ module.exports = {
 
   register: async (req, res) => {
     try {
-      const { email, username, password, role } = req.body;
+      const { email, username, password, rol } = req.body;
       
       const existingUser = await User.getByEmail(email);
       if (existingUser) {
@@ -33,7 +33,7 @@ module.exports = {
         username, 
         email, 
         passwordHash: password_hash, 
-        rol: role 
+        rol: rol 
       });
       
       res.status(201).json({ id: userId });
