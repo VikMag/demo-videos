@@ -13,10 +13,9 @@ const pool = new Pool({
 const createTables = async () => {
   const client = await pool.connect();
   try {
-    // Iniciamos una transacción para asegurar la integridad
     await client.query('BEGIN');
 
-    // 1. Primero creamos la tabla categorias (no tiene dependencias)
+    // 1. Tabla categorias
     await client.query(`
       CREATE TABLE IF NOT EXISTS categorias (
         id SERIAL PRIMARY KEY,
@@ -24,19 +23,19 @@ const createTables = async () => {
       );
     `);
 
-    // 2. Luego la tabla users (no tiene dependencias)
+    // 2. Tabla users (modificada con solo 'admin' y 'estudiante')
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         username VARCHAR(50) NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
-        rol VARCHAR(20) CHECK (rol IN ('estudiante', 'profesor', 'admin')) DEFAULT 'estudiante',
+        rol VARCHAR(20) NOT NULL CHECK (rol IN ('admin', 'estudiante')),
         created_at TIMESTAMP DEFAULT NOW()
       );
     `);
 
-    // 3. Ahora videos (depende de categorias)
+    // 3. Tabla videos
     await client.query(`
       CREATE TABLE IF NOT EXISTS videos (
         id SERIAL PRIMARY KEY,
@@ -52,7 +51,7 @@ const createTables = async () => {
       );
     `);
 
-    // 4. Luego documentos (depende de videos)
+    // 4. Tabla documentos
     await client.query(`
       CREATE TABLE IF NOT EXISTS documentos (
         id SERIAL PRIMARY KEY,
@@ -66,7 +65,7 @@ const createTables = async () => {
       );
     `);
 
-    // 5. Finalmente user_videos (depende de users y videos)
+    // 5. Tabla user_videos
     await client.query(`
       CREATE TABLE IF NOT EXISTS user_videos (
         id SERIAL PRIMARY KEY,
@@ -91,14 +90,13 @@ const createTables = async () => {
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('❌ Error al crear tablas:', error.message);
-    throw error; // Relanzamos el error para manejo externo
+    throw error;
   } finally {
     client.release();
     pool.end();
   }
 };
 
-// Ejecutamos con manejo de errores adecuado
 createTables()
   .catch(e => {
     console.error('Error en la ejecución:', e);
