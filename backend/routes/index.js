@@ -13,9 +13,6 @@ router.use('/user-videos', authMiddleware, require('./userVideoRoutes'));
 router.use('/users', authMiddleware, require('./userRoutes'));
 router.use('/documentos', authMiddleware, require('./documentoRoutes'));
 
-// Rutas solo para administradores
-router.use('/admin', authMiddleware, isAdmin, require('./adminRoutes'));
-
 // Manejo de rutas no encontradas
 router.use((req, res) => {
   res.status(404).json({
@@ -24,13 +21,5 @@ router.use((req, res) => {
   });
 });
 
-// Manejo centralizado de errores
-router.use((err, req, res, next) => {
-  console.error('Error en ruta:', err);
-  res.status(500).json({
-    error: 'Error interno del servidor',
-    details: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
 
 module.exports = router;
