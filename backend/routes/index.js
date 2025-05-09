@@ -2,10 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middlewares/authMiddleware');
 const isAdmin = require('../middlewares/isAdmin');
-const requestLogger = require('../middlewares/requestLogger');
 
-// Middleware para log de peticiones (opcional)
-router.use(requestLogger);
 
 // Rutas públicas
 router.use('/auth', require('./authRoutes'));
