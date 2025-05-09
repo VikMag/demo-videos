@@ -2,18 +2,23 @@ const express = require('express');
 const router = express.Router();
 const documentoController = require('../controllers/documentoController');
 const authMiddleware = require('../middlewares/authMiddleware');
-const isAdminMiddleware = require('../middlewares/isAdmin');
+const isAdmin = require('../middlewares/isAdmin');
 
+// Rutas públicas (sin autenticación)
+router.get('/', documentoController.getAllDocuments);
+router.get('/:id', documentoController.getDocumentsByVideoId);
 
-router.get('/', authMiddleware, isAdminMiddleware, documentoController.getAllDocuments);
+// Rutas solo para administradores (requieren autenticación y rol admin)
+router.post('/', 
+  authMiddleware,  // Verifica autenticación primero
+  isAdmin,        // Luego verifica que sea admin
+  documentoController.createDocumento
+);
 
-// Crear nuevo documento (a implementar)
-router.post('/', authMiddleware, isAdminMiddleware, documentoController.createDocumento);
-
-// Eliminar documento (a implementar)
-router.delete('/:id', authMiddleware, documentoController.delete);
-
-// Obtener un documento por ID
-router.get('/:id', authMiddleware, documentoController.getDocumentsByVideoId);
+router.delete('/:id', 
+  authMiddleware,  // Verifica autenticación primero
+  isAdmin,        // Luego verifica que sea admin
+  documentoController.delete
+);
 
 module.exports = router;

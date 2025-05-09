@@ -14,25 +14,27 @@ export class UserVideoService {
     private http: HttpClient,
     private router: Router
   ) {}
-
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
+    if (!token || token.split('.').length !== 3) {
+      this.handleError(new HttpErrorResponse({status: 401}));
+      return new HttpHeaders();
+    }
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json', 
       'Accept': 'application/json'
     });
   }
 
   private handleError(error: HttpErrorResponse) {
-    if (error.status === 401 || error.status === 403) {
+    if (error.status === 401 || error.status === 403 || !localStorage.getItem('token')) {
       localStorage.clear();
       this.router.navigate(['/login']);
-      return throwError('Session expired. Please login again.');
+      return throwError('Session expired');
     }
-    return throwError(error.error?.message || 'An unexpected error occurred');
+    return throwError(error.error?.message || 'Error');
   }
-
   getPurchasedVideos(userId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${userId}/videos`, {
       headers: this.getHeaders(),

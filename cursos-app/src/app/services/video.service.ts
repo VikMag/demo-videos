@@ -18,28 +18,26 @@ export class VideoService {
   // Método para obtener las cabeceras con el token de autenticación
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
-    let headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
+    if (!token || token.split('.').length !== 3) {
+      this.handleError(new HttpErrorResponse({status: 401}));
+      return new HttpHeaders();
     }
-    return headers;
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
   }
 
   // Manejo centralizado de errores
   private handleError(error: HttpErrorResponse) {
-    if (error.status === 401 || error.status === 403) {
-      // Token expirado o no válido - redirigir a login
+    if (error.status === 401 || error.status === 403 || !localStorage.getItem('token')) {
       localStorage.clear();
       this.router.navigate(['/login']);
-      return throwError('Tu sesión ha expirado. Por favor inicia sesión nuevamente.');
+      return throwError('Sesión expirada');
     }
-    return throwError(error.error?.message || 'Ocurrió un error inesperado');
+    return throwError(error.error?.message || 'Error');
   }
-
   /* Métodos para administradores */
   
   // Obtener todos los videos (para administradores)

@@ -7,10 +7,10 @@ module.exports = {
       const documentos = await Documento.getAll();
       res.json(documentos);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener los documentos' });
+      res.status(500).json({ error: 'Error al obtener documentos' });
     }
   },
-  // Obtener documentos por video ID
+
   getDocumentsByVideoId: async (req, res) => {
     const videoId = req.params.id;
     try {
@@ -20,34 +20,31 @@ module.exports = {
       }
       res.json(documentos);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener los documentos' });
+      res.status(500).json({ error: 'Error al obtener documentos' });
     }
   },
 
-  // Crear nuevo documento
   createDocumento: async (req, res) => {
-    const { nombre,url, video_id } = req.body;
+    const { nombre, url, video_id } = req.body;
 
     if (!nombre || !url || !video_id) {
-      return res.status(400).json({ error: 'Faltan campos obligatorios' });
+      return res.status(400).json({ error: 'Faltan campos requeridos' });
     }
 
     try {
-      // Crear el usuario en la base de datos
-      const documentId = await Documento.create({ nombre,url, video_id  });
-
-      res.status(201).json({ id: documentId, message: 'documento creado exitosamente' });
+      const documentId = await Documento.create({ nombre, url, video_id });
+      res.status(201).json({ id: documentId });
     } catch (error) {
       res.status(500).json({ error: 'Error al crear documento' });
     }
   },
 
-   delete: async (req, res) => {
-     try {
-       await Documento.delete(req.params.id);
-       res.json({ success: true });
-     } catch (error) {
-       res.status(500).json({ error: 'Error al eliminar' });
-     }
-   }
+  delete: async (req, res) => {
+    try {
+      await Documento.delete(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: 'Error al eliminar documento' });
+    }
+  }
 };

@@ -17,6 +17,10 @@ export class UserService {
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
+    if (!token || token.split('.').length !== 3) {
+      this.handleError(new HttpErrorResponse({status: 401}));
+      return new HttpHeaders();
+    }
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -25,14 +29,13 @@ export class UserService {
   }
 
   private handleError(error: HttpErrorResponse) {
-    if (error.status === 401 || error.status === 403) {
+    if (error.status === 401 || error.status === 403 || !localStorage.getItem('token')) {
       localStorage.clear();
       this.router.navigate(['/login']);
-      return throwError('Your session has expired. Please log in again.');
+      return throwError('Session expired');
     }
-    return throwError(error.error?.message || 'An unexpected error occurred');
+    return throwError(error.error?.message || 'Error');
   }
-
   sendFeedback(subject: string, video: string, message: string): Observable<any> {
     return this.http.post<any>(
       `${this.apiUrl}/feedback`, 

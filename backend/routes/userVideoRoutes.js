@@ -1,16 +1,15 @@
 const express = require('express');
-const router = express.Router(); // Crear el router
-const authMiddleware = require('../middlewares/authMiddleware');
+const router = express.Router();
 const UserVideoController = require('../controllers/userVideoController');
+const authMiddleware = require('../middlewares/authMiddleware');
 
-// Configurar rutas
-router.get('/:user_id/videos', 
-  authMiddleware,
-  UserVideoController.getVideosByUser
-);
+// Ruta PÚBLICA para obtener videos de usuario
+router.get('/:user_id/videos', UserVideoController.getVideosByUser);
+
+// Ruta PRIVADA para agregar videos a usuario
 router.post('/videos', 
-    authMiddleware, 
-    UserVideoController.addVideoToUser
-  );
-// Asegúrate de exportar el router
-module.exports = router; // Esta línea es crucial
+  authMiddleware,  // Solo usuarios autenticados
+  UserVideoController.addVideoToUser
+);
+
+module.exports = router;

@@ -1,7 +1,7 @@
 const UserVideo = require('../models/UserVideo');
 
 module.exports = {
-  getVideosByUser : async (req, res) => {
+  getVideosByUser: async (req, res) => {
     try {
       const videos = await UserVideo.getByUser(req.params.user_id);
       if (!videos || videos.length === 0) {
@@ -9,18 +9,22 @@ module.exports = {
       }
       res.json(videos);
     } catch (error) {
-      console.error('Error en getVideosByUser:', error);
-      res.status(500).json({ error: error.message || 'Error al obtener videos' });
+      res.status(500).json({ error: 'Error al obtener videos del usuario' });
     }
   },
 
   addVideoToUser: async (req, res) => {
     try {
       const { user_id, video_id, precio_pagado } = req.body;
+      
+      if (!user_id || !video_id || !precio_pagado) {
+        return res.status(400).json({ error: 'Faltan campos requeridos' });
+      }
+
       const id = await UserVideo.addUserVideo(user_id, video_id, precio_pagado);
       res.status(201).json({ id });
     } catch (error) {
-      res.status(400).json({ error: 'Error al agregar video' });
+      res.status(500).json({ error: 'Error al agregar video al usuario' });
     }
   }
 };
