@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const { validateRegister, validateLogin } = require('../middlewares/authValidation');
 const rateLimit = require('express-rate-limit');
 
 // Limitador de tasa para prevenir ataques de fuerza bruta
